@@ -1,6 +1,8 @@
+import sys
 import requests
 import re
 import os
+import datetime
 
 headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36',
@@ -12,7 +14,7 @@ repeat = 1
 repeat_user_name = 1
 
 
-def getSinglePic(url):
+def getSinglePic(url,picPath):
     global repeat
     global repeat_user_name
     response = requests.get(url, headers=headers)
@@ -34,7 +36,7 @@ def getSinglePic(url):
     # 提取图片原图地址
     picture = re.search('"original":"(.+?)"},"tags"', response.text)
     pic = requests.get(picture.group(1), headers=headers)
-    f = open(path + '%s_%s-by-%s.%s' % (illust_id, name, user_name, picture.group(1)[-3:]), 'wb')
+    f = open(picPath + '%s_%s-by-%s.%s' % (illust_id, name, user_name, picture.group(1)[-3:]), 'wb')
     f.write(pic.content)
     f.close()
     return True
@@ -42,14 +44,18 @@ def getSinglePic(url):
 
 def getAllPicUrl():
     count = 1
-    for n in range(1, 2):
+    dataTime = datetime.datetime.now().strftime('%Y-%M-%D-%H-%M-%S')
+    for n in range(1, 10):
         url = 'https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=%d&format=json' % n
         response = requests.get(url, headers=headers)
         illust_id = re.findall('"illust_id":(\d+?),', response.text)
+        picPath=path+dataTime+'/'+n
+        if not os.path.exists(picPath):
+            os.makedirs(picPath)
         picUrl = ['https://www.pixiv.net/artworks/' + i for i in illust_id]
         for url in picUrl:
             print('Downloading the picture %d ' % count, end='   ')
-            print('OK' if getSinglePic(url) else "FAILED", end='\n')
+            print('OK' if getSinglePic(url,picPath) else "FAILED", end='\n')
             count += 1
     os.system("ls -al")
     return None
