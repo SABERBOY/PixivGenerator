@@ -49,7 +49,7 @@ def getAllPicUrl():
         url = 'https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=%d&format=json' % n
         response = requests.get(url, headers=headers)
         illust_id = re.findall('"illust_id":(\d+?),', response.text)
-        picPath=path+dataTime+'/'+n
+        picPath=path+dataTime+'/'+str(n)
         if not os.path.exists(picPath):
             os.makedirs(picPath)
         picUrl = ['https://www.pixiv.net/artworks/' + i for i in illust_id]
