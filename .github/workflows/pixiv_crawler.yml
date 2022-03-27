@@ -33,7 +33,7 @@ jobs:
       run: |
         git config --global user.name "SABERBOY" # Change to your GitHub user name
         git config --global user.email "1132276876@qq.com" # Change to your GitHub email address
-        git add "*.jpg" "*.png" && echo "Git Added" # Guess if there are any other types of pictures - Ref: https://stackoverflow.com/questions/25083290/git-add-error-unknown-switch
+        git add "*.jpg" "*.png" "*.json" && echo "Git Added" # Guess if there are any other types of pictures - Ref: https://stackoverflow.com/questions/25083290/git-add-error-unknown-switch
         git commit -m 'upload pa result' && echo "Git Committed"
         git push -u origin pixiv && echo "Git Pushed Origin" # Change to your branch to place crawled pictures
     - name: Failure test

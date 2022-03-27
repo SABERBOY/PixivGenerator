@@ -3,6 +3,7 @@ import requests
 import re
 import os
 import datetime
+import json
 
 headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36',
@@ -42,10 +43,21 @@ def getSinglePic(url,picPath):
     return True
 
 
+def generateJson():
+    pixivPath = './pixiv/'
+    pixivJsonPath = './pixiv/url.json'
+    path = [os.path.join(dp, f) for dp, dn, fs in os.walk(pixivPath) for f in fs if
+                os.path.splitext(f)[1] in ['.jpg', '.png']]
+    pixiv_json={"pixiv":path}
+    jj=json.dumps(pixiv_json)
+    f = open(pixivJsonPath, 'wb')
+    f.write(jj.encode())
+    f.close()
+
 def getAllPicUrl():
     count = 1
-    dataTime = datetime.datetime.now().strftime('%Y-%M-%D-%H-%M-%S')
-    for n in range(1, 10):
+    dataTime = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    for n in range(1, 2):
         url = 'https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=%d&format=json' % n
         response = requests.get(url, headers=headers)
         illust_id = re.findall('"illust_id":(\d+?),', response.text)
@@ -58,6 +70,7 @@ def getAllPicUrl():
             print('OK' if getSinglePic(url,picPath) else "FAILED", end='\n')
             count += 1
     os.system("ls -al")
+    generateJson()
     return None
 
 getAllPicUrl()
