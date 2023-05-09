@@ -41,8 +41,8 @@ def getSinglePic(url, picPath):
     # 提取图片原图地址
     picture = re.search('"original":"(.+?)"},"tags"', response.text)
     pic = requests.get(picture.group(1), headers=headers, proxies=proxies)
-    f = open(picPath + '%s_%s-by-%s.%s' %
-             (illust_id, name, user_name, picture.group(1)[-3:]), 'wb')
+    f = open(picPath + '%s-by-%s' %
+             (illust_id, user_name), 'wb')
     f.write(pic.content)
     f.close()
     return True
@@ -78,11 +78,24 @@ def generateJson(picPath: str):
 
 def generate_one_json(picPath):
     file_path = get_file_list(picPath, ['.jpg', '.png'])
+    rename_with_short_name(file_path)
+    file_path = get_file_list(picPath, ['.jpg', '.png'])
     pixiv_json = {"pixiv_pic": file_path}
     pixiv_json_path = picPath+'pixiv_pic.json'
     pixiv_json_file = open(pixiv_json_path, 'wb')
     pixiv_json_file.write(json.dumps(pixiv_json).encode())
     pixiv_json_file.close()
+    
+def rename_with_short_name(files:List[str]):
+    for file in files:
+        file_name = os.path.basename(file)
+        # 获取文件后缀
+        file_ext = os.path.splitext(file_name)[1]
+        id = file_name.split('_')[0]
+        user_name = file_name.split('-by-')[1].split('.')[0]
+        new_name = id+"_"+"-by-"+user_name+file_ext
+        # renme
+        os.rename(file, os.path.dirname(file)+'/'+new_name)
 
 
 def get_file_list(path: str, file_ext: List[str]) -> List[str]:
